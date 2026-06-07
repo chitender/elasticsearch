@@ -87,6 +87,15 @@ repositories {
   gradlePluginPortal()
 }
 
+configurations.all {
+  resolutionStrategy.eachDependency { details ->
+    // nebula-core:3.0.0 was only published to JCenter; 3.0.1 is identical and on Maven Central
+    if (details.requested.group == 'com.netflix.nebula' && details.requested.name == 'nebula-core' && details.requested.version == '3.0.0') {
+      details.useVersion '3.0.1'
+    }
+  }
+}
+
 dependencies {
 
   api localGroovy()
