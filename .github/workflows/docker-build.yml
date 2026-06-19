@@ -30,10 +30,14 @@ jobs:
       - name: Build and push to ECR
         run: |
           IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY}"
+          SHORT_SHA="${GITHUB_SHA::7}"
+          TAG="7.17.28-${SHORT_SHA}"
           docker build \
+            -t "${IMAGE}:${TAG}" \
             -t "${IMAGE}:7.17.28-patched" \
             -t "${IMAGE}:latest" \
             -f Dockerfile .
+          docker push "${IMAGE}:${TAG}"
           docker push "${IMAGE}:7.17.28-patched"
           docker push "${IMAGE}:latest"
-          echo "Pushed: ${IMAGE}:7.17.28-patched"
+          echo "Pushed: ${IMAGE}:${TAG}"
