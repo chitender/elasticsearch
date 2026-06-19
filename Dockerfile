@@ -22,7 +22,10 @@ RUN mvn --batch-mode --no-transfer-progress dependency:copy \
         -Dartifact=net.minidev:json-smart:2.4.9 \
         -DoutputDirectory=/patches && \
     mvn --batch-mode --no-transfer-progress dependency:copy \
-        -Dartifact=org.lz4:lz4-java:1.8.1 \
+        -Dartifact=org.lz4:lz4-java:1.10.1 \
+        -DoutputDirectory=/patches && \
+    mvn --batch-mode --no-transfer-progress dependency:copy \
+        -Dartifact=org.yaml:snakeyaml:2.0 \
         -DoutputDirectory=/patches && \
     mvn --batch-mode --no-transfer-progress dependency:copy \
         -Dartifact=org.bouncycastle:bcprov-jdk18on:1.84 \
@@ -44,6 +47,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 COPY --from=downloader /patches/*.jar /tmp/patches/
 
 RUN set -eux; \
+    find /usr/share/elasticsearch -name "elasticsearch-sql-cli-*.jar" -delete; \
     for new_jar in /tmp/patches/*.jar; do \
         base=$(basename "$new_jar" .jar | sed 's/-[0-9].*//'); \
         found=0; \
