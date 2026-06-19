@@ -70,7 +70,7 @@ RUN set -eux; \
             cp "$new_jar" "$dir/"; \
             chmod 644 "$dir/$(basename $new_jar)"; \
             found=1; \
-        done < <(find /usr/share/elasticsearch -name "${base}-*.jar" 2>/dev/null); \
+        done < <(find /usr/share/elasticsearch -name "${base}-[0-9]*.jar" 2>/dev/null); \
         [ "$found" -eq 0 ] && echo "WARNING: no existing JAR matched base=$base"; \
     done; \
     rm -rf /tmp/patches
