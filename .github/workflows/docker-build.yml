@@ -1,4 +1,4 @@
-name: Build & Push OSS Docker Image
+name: Build & Push Docker Image (UBI8)
 
 on:
   push:
@@ -40,9 +40,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build OSS Docker Image
+      - name: Build UBI8 Docker Image
         run: |
-          ./gradlew :distribution:docker:buildOssDockerImage \
+          ./gradlew :distribution:docker:buildUbiDockerImage \
             -Dbuild.snapshot=false \
             --no-daemon \
             --stacktrace \
@@ -59,8 +59,8 @@ jobs:
         env:
           REPO_OWNER: ${{ github.repository_owner }}
         run: |
-          IMAGE_SOURCE="docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2"
-          IMAGE_TARGET="ghcr.io/${REPO_OWNER}/elasticsearch-oss"
+          IMAGE_SOURCE="elasticsearch-ubi8:7.10.2"
+          IMAGE_TARGET="ghcr.io/${REPO_OWNER}/elasticsearch"
           docker tag "$IMAGE_SOURCE" "${IMAGE_TARGET}:7.10.2-patched"
           docker tag "$IMAGE_SOURCE" "${IMAGE_TARGET}:latest"
           docker push "${IMAGE_TARGET}:7.10.2-patched"
