@@ -39,6 +39,8 @@ FROM docker.elastic.co/elasticsearch/elasticsearch:7.17.28
 
 USER root
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 COPY --from=downloader /patches/*.jar /tmp/patches/
 
 RUN set -eux; \
