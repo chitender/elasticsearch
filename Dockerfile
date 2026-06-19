@@ -22,7 +22,7 @@ RUN mvn --batch-mode --no-transfer-progress dependency:copy \
         -Dartifact=net.minidev:json-smart:2.4.9 \
         -DoutputDirectory=/patches && \
     mvn --batch-mode --no-transfer-progress dependency:copy \
-        -Dartifact=org.lz4:lz4-java:1.10.1 \
+        -Dartifact=org.lz4:lz4-java:1.8.1 \
         -DoutputDirectory=/patches && \
     mvn --batch-mode --no-transfer-progress dependency:copy \
         -Dartifact=org.yaml:snakeyaml:2.0 \
