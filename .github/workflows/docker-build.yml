@@ -43,7 +43,6 @@ jobs:
       - name: Build Docker Image
         run: |
           ./gradlew :distribution:docker:buildDockerImage \
-            -Dbuild.snapshot=false \
             --no-daemon \
             --stacktrace \
             -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=512m"
@@ -59,7 +58,7 @@ jobs:
         env:
           REPO_OWNER: ${{ github.repository_owner }}
         run: |
-          IMAGE_SOURCE="elasticsearch:7.17.28"
+          IMAGE_SOURCE="elasticsearch:7.17.28-SNAPSHOT"
           IMAGE_TARGET="ghcr.io/${REPO_OWNER}/elasticsearch"
           docker tag "$IMAGE_SOURCE" "${IMAGE_TARGET}:7.17.28-patched"
           docker tag "$IMAGE_SOURCE" "${IMAGE_TARGET}:latest"
