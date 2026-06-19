@@ -5,30 +5,35 @@ on:
     branches: [ fix/cve-7.17.28 ]
   workflow_dispatch:
 
+env:
+  ECR_REGISTRY: 728921286627.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REPOSITORY: eck/elasticsearch
+  AWS_REGION: us-east-1
+
 jobs:
   build-docker:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Build and push patched image
-        env:
-          REPO_OWNER: ${{ github.repository_owner }}
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push to ECR
         run: |
+          IMAGE="${ECR_REGISTRY}/${ECR_REPOSITORY}"
           docker build \
-            -t "ghcr.io/${REPO_OWNER}/elasticsearch:7.17.28-patched" \
-            -t "ghcr.io/${REPO_OWNER}/elasticsearch:latest" \
+            -t "${IMAGE}:7.17.28-patched" \
+            -t "${IMAGE}:latest" \
             -f Dockerfile .
-          docker push "ghcr.io/${REPO_OWNER}/elasticsearch:7.17.28-patched"
-          docker push "ghcr.io/${REPO_OWNER}/elasticsearch:latest"
+          docker push "${IMAGE}:7.17.28-patched"
+          docker push "${IMAGE}:latest"
+          echo "Pushed: ${IMAGE}:7.17.28-patched"
