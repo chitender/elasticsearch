@@ -1,0 +1,68 @@
+name: Build & Push OSS Docker Image
+
+on:
+  push:
+    branches: [ fix/cve-7.10.2 ]
+  workflow_dispatch:
+
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -h
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle', '**/gradle-wrapper.properties', 'buildSrc/**/version.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build OSS Docker Image
+        run: |
+          ./gradlew :distribution:docker:buildOssDockerImage \
+            -Dbuild.snapshot=false \
+            --no-daemon \
+            --stacktrace \
+            -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=512m"
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag and push to GHCR
+        env:
+          REPO_OWNER: ${{ github.repository_owner }}
+        run: |
+          IMAGE_SOURCE="docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2"
+          IMAGE_TARGET="ghcr.io/${REPO_OWNER}/elasticsearch-oss"
+          docker tag "$IMAGE_SOURCE" "${IMAGE_TARGET}:7.10.2-patched"
+          docker tag "$IMAGE_SOURCE" "${IMAGE_TARGET}:latest"
+          docker push "${IMAGE_TARGET}:7.10.2-patched"
+          docker push "${IMAGE_TARGET}:latest"
+          echo "Image pushed: ${IMAGE_TARGET}:7.10.2-patched"

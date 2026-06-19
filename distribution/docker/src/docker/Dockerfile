@@ -67,6 +67,11 @@ FROM ${base_image}
 
 ENV ELASTIC_CONTAINER true
 
+<% if (docker_base != 'ubi') { %>
+RUN sed -i 's/mirror\\.centos\\.org/vault.centos.org/g' /etc/yum.repos.d/CentOS-*.repo && \\
+    sed -i 's/^#.*baseurl=http/baseurl=http/g' /etc/yum.repos.d/CentOS-*.repo && \\
+    sed -i 's/^mirrorlist=http/#mirrorlist=http/g' /etc/yum.repos.d/CentOS-*.repo
+<% } %>
 RUN for iter in {1..10}; do \\
       ${package_manager} update --setopt=tsflags=nodocs -y && \\
       ${package_manager} install --setopt=tsflags=nodocs -y \\
