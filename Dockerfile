@@ -25,9 +25,6 @@ RUN mvn --batch-mode --no-transfer-progress dependency:copy \
         -Dartifact=org.lz4:lz4-java:1.8.1 \
         -DoutputDirectory=/patches && \
     mvn --batch-mode --no-transfer-progress dependency:copy \
-        -Dartifact=org.yaml:snakeyaml:2.0 \
-        -DoutputDirectory=/patches && \
-    mvn --batch-mode --no-transfer-progress dependency:copy \
         -Dartifact=org.bouncycastle:bcprov-jdk18on:1.84 \
         -DoutputDirectory=/patches && \
     mvn --batch-mode --no-transfer-progress dependency:copy \
