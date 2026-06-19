@@ -4,13 +4,28 @@ FROM maven:3.9-eclipse-temurin-21-alpine AS downloader
 WORKDIR /patches
 
 RUN mvn --batch-mode --no-transfer-progress dependency:copy \
+        -Dartifact=io.netty:netty-buffer:4.1.135.Final \
+        -DoutputDirectory=/patches && \
+    mvn --batch-mode --no-transfer-progress dependency:copy \
         -Dartifact=io.netty:netty-codec:4.1.135.Final \
         -DoutputDirectory=/patches && \
     mvn --batch-mode --no-transfer-progress dependency:copy \
         -Dartifact=io.netty:netty-codec-http:4.1.135.Final \
         -DoutputDirectory=/patches && \
     mvn --batch-mode --no-transfer-progress dependency:copy \
+        -Dartifact=io.netty:netty-common:4.1.135.Final \
+        -DoutputDirectory=/patches && \
+    mvn --batch-mode --no-transfer-progress dependency:copy \
         -Dartifact=io.netty:netty-handler:4.1.135.Final \
+        -DoutputDirectory=/patches && \
+    mvn --batch-mode --no-transfer-progress dependency:copy \
+        -Dartifact=io.netty:netty-resolver:4.1.135.Final \
+        -DoutputDirectory=/patches && \
+    mvn --batch-mode --no-transfer-progress dependency:copy \
+        -Dartifact=io.netty:netty-transport:4.1.135.Final \
+        -DoutputDirectory=/patches && \
+    mvn --batch-mode --no-transfer-progress dependency:copy \
+        -Dartifact=io.netty:netty-transport-native-unix-common:4.1.135.Final \
         -DoutputDirectory=/patches && \
     mvn --batch-mode --no-transfer-progress dependency:copy \
         -Dartifact=com.fasterxml.jackson.core:jackson-core:2.15.4 \
